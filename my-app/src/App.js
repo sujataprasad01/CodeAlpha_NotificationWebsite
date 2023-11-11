@@ -11,14 +11,14 @@ import {
   Box
 } from '@chakra-ui/react';
 
-function notifyUser(notificationText="Thank you for enabling notifications!"){
+async function notifyUser(notificationText="Thank you for enabling notifications!"){
   if(!("Notification" in window)){
     alert("Browser does not support notifications");
   }
   else if(Notification.permission==='granted'){
     const notification=new Notification(notificationText);
   } else if(Notification.permission!=='denied'){
-    Notification.requestPermission().then((permission)=>{
+    await Notification.requestPermission().then((permission)=>{
       if(permission==='granted'){
         const notification=new Notification(notificationText);
       }
@@ -28,12 +28,15 @@ function notifyUser(notificationText="Thank you for enabling notifications!"){
 function App() {
   const [userResponded, setUserResponded]= useState(false);
 
-  function enableNotifsAndClsoe(){
-
+  async function enableNotifsAndClsoe(){
+  await notifyUser().then(()=>{
+    setUserResponded(true);
+  });
+ 
   }
 
  function disableNotifsAndClsoe(){
-    
+  setUserResponded(true);
   }
 
   return(!(userResponded)&& !(Notification.permission==='granted'))? (
@@ -56,7 +59,9 @@ function App() {
     </ChakraProvider>
   ): (Notification.permission==='granted')? (
     <ChakraProvider theme={theme}>
-
+    <Button colorScheme='gray' size='sm' onClick={()=>notifyUser("Thanks for using this website")}>
+      Click to show a thank you!
+    </Button>
     </ChakraProvider>
   ):
   <>
